@@ -1,0 +1,13 @@
+6
+prueba numero de palabras diferentes 
+<a> <b> palabras diferentes
+ser o no ser <aa> <bb> la cuestion
+<a> o no <a> esa es la cuestion
+ser o no ser <aa> <bb> la cuestion
+<a> o si <a> esa es la cuestion
+ser o no ser <aa> <bb> la cuestion
+<a> o no <a> esa <hola> la cuestion
+ser o no ser <aa> <aa> la cuestion
+<a> o no <a> esa <hola> la cuestion
+ser o no ser <aa> <bb> la cuestion
+<a> o no <a> esa <a> la cuestion

@@ -1,0 +1,37 @@
+18
+<a> <c> <c>
+<b> ok <b>
+<a> <c> <c>
+<b> <b> ok
+<a> wrong <a>
+bad <b> <b>
+<a> ok <a>
+ok <b> <b>
+<a> <a>
+ok <b>
+ok <a>
+<b> <b>
+<a>
+<b>
+<a> <a>
+<b> ok
+<a> <a> <a>
+<b> ok ok
+<a> <a> <a>
+<b> not ok
+<a> ok
+<b> <b>
+<a> not <a>
+<b> <b> ok
+<a> ok fine
+<b> <b> fine
+<a> bad not
+<b> <b> bad
+<a> two three four
+<a> two <a> four
+<a> fine <c>
+<b> <b> <b>
+<a> bad <c> <c>
+<b> <b> <b> wrong
+<a> ok <c> <c>
+<b> <b> <b> ok
