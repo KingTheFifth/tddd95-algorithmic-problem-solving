@@ -88,7 +88,8 @@ u64 anger(u64 candy, u64 children, u64 *wishes) {
 }
 
 int main() {
-	cin.tie(NULL);
+	cin.tie(nullptr);
+	cout.tie(nullptr);
 	ios::sync_with_stdio(false);
 	u64 N, M;
 	while (true) {
