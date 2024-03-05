@@ -11,6 +11,10 @@
 
 using namespace std;
 
+/**
+ * Struct representing an interval as a start and end point. The struct also 
+ * records the original index of the interval in the input, for convenience.
+ */
 struct Interval {
 	double start;
 	double end;
@@ -36,8 +40,18 @@ struct Interval {
 	}
 };
 
-bool solve(Interval &target, vector<Interval> &intervals, vector<int> &used) {
+/**
+ * Given a list of intervals and a target interval to cover using the intervals
+ * in the list, returns true if the target can be wholly covered and a list of 
+ * the indices of the intervals used to minimally cover the target.
+ * Return false if it is not possible to cover the target interval with 
+ * the given intervals. Time complexity O(N*log N) where N is the number of 
+ * supplied intervals to be used for covering.
+ * (Slowest part of algorithm is sorting which is O(N*log N) )
+ */
+bool cover(Interval &target, vector<Interval> &intervals, vector<int> &used) {
 	// Sort the intervals in increasing order based on where they start
+  // Time complexity O(N*log N)
 	auto lam = [](Interval &a, Interval &b) {
 		return a.start < b.start;
 	};
@@ -49,6 +63,23 @@ bool solve(Interval &target, vector<Interval> &intervals, vector<int> &used) {
 		return false;
 	}
 
+  // Loop through all intervals from left to right exactly once, time complexity 
+  // O(N) as a constant amount of comparisons/operations are done in each iteration
+  //
+  // Try to construct an interval that covers the target interval, call it 
+  // the cover, using the given intervals
+  //
+  // This is done by continuosly picking the interval that overlaps with the 
+  // cover and that stretches farthest to the right, and then extending the 
+  // cover with it (can be seen as taking the union of the cover and the chosen
+  // interval for stretching)
+  //
+  // This continuously stretches the cover to the right, until either the cover
+  // covers the target interval or we run out of intervals to consider
+  //
+  // Let the cover initially start and end on the left end of the target interval
+  // Let the best choice initially be an interval that is on the left of all 
+  // other intervals
 	double neg_inf = -1 * numeric_limits<double>::infinity();
 	double leftmost_start = target.start;
 	double rightmost_end = target.start;
@@ -58,41 +89,53 @@ bool solve(Interval &target, vector<Interval> &intervals, vector<int> &used) {
 			if (i.end > best_choice.end) {
 				// the current interval overlaps with how much we've covered 
 				// so far and it stretches our covering most to the right
+        // among the considered intervals so far
 				// => use this as the best candidate to stretch out covering
 				best_choice = i;
 			}
-			// the current interval does not stretch the current covered span 
-			// more to the right => skip it
+			// else, the current interval does not stretch the current covered span 
+			// more to the right than the current best choice => skip it
 		}
 		else {
-			// the current interval no longer overlaps with the span that covers
-			// the target interval 
+			// The current interval no longer overlaps with the cover span as constructed 
+      // so far => none of the intervals left overlap with the cover span as 
+      // they all start to the left of this one
+      //
+      // Thus, we've reached the end of intervals that overlap with the cover 
+      // interval 
 			// => the current best choice *is* the best choice to stretch the 
-			// span with
+			// cover interval with
+      // Expand the cover interval to the right end of the best choice and 
+      // record the best choice as a used interval (record its index)
 			rightmost_end = best_choice.end;	
 			used.push_back(best_choice.index);
 
-			// if the covering span now covers the target interval then we're done
+			// if the covering interval now covers the target interval then we're done
+      // No need to stretch the cover interval more as we're looking for 
+      // the minimal cover interval
 			if (rightmost_end >= target.end) {
 				return true;
 			}
 
-			// else: if the current does not overlap with the current span,
-			// then so will not all intervals after this one
-			// => we cannot cover the target interval wholly
+			// else: if the current interval does not overlap with the current span
+      // after having stretched the cover with the best choice,
+			// then so will none of the remaining intervals after this one
+			// => there is an unbridgable gap and we cannot cover the target interval wholly
 			if (i.start > rightmost_end) {
 				return false;
 			}
 
-			// if the current interval *does* overlap with the current span,
+			// if the current interval *does* overlap with the current span after stretching,
 			// then let it be the current best candidate with which we will 
-			// extend the span to the right
+			// extend the cover span to the right 
 			best_choice = i;
 		}
 	}
 
 	// we might have found an interval to extend the covering span with but 
-	// not yet had the chance to do the extending
+	// not yet had the chance to do the extending (we only extend if we find 
+  // an interval that does not overlap with the cover, but we might run out 
+  // of intervals to use before that point!)
 	// => do the extending
 	if (best_choice.start != neg_inf) {
 		rightmost_end = best_choice.end;
@@ -104,6 +147,9 @@ bool solve(Interval &target, vector<Interval> &intervals, vector<int> &used) {
 	if (rightmost_end >= target.end) {
 		return true;
 	}
+
+  // The covering span does not cover the target interval and there are no 
+  // more intervals left to expand it with => impossible
 	return false;
 }
 
@@ -117,6 +163,10 @@ int main() {
 		if(cin.eof()) {
 			break;
 		}
+
+    // Process input intervals
+    // Make sure to save the index for each interval as this is used for the 
+    // output and the solver function may reorder the intervals
 		Interval target = Interval(A, B);
 		vector<Interval> intervals;
 		vector<int> used;
@@ -127,7 +177,9 @@ int main() {
 			intervals.push_back(Interval(a, b, index));
 			index++;
 		}
-		if (solve(target, intervals, used)) {
+
+    // Try to solve the problem
+		if (cover(target, intervals, used)) {
 			cout << used.size() << "\n";
 			for (int i = 0; i < used.size(); i++) {
 				cout << used[i];
