@@ -13,9 +13,9 @@ struct UnionSet {
 		// O(N)
 		for (int i = 0; i < size; i++) {
 			// Initialise every element to belong to a set with itself only,
-			// having depth 0
+			// having depth 1
 			parent.push_back(i);
-			depth.push_back(0);
+			depth.push_back(1);
 		}
 	}
 
@@ -76,6 +76,8 @@ vector<string> solve(int N, vector<Query> &queries) {
 	UnionSet union_set = UnionSet(N);
 
 	// O(Q) where Q is the number of queries (queries.size())
+  // TODO: This is not correct as both join() and same() 
+  // are not O(1)
 	for (Query q : queries) {
 		if (q.operation == '=') {
 			union_set.join(q.operand1, q.operand2);
@@ -105,11 +107,15 @@ int main() {
 		if (cin.eof()) {
 			break;
 		}
+
+    // Save queries to vector in nice format
 		while (Q > 0) {
 			cin >> op >> a >> b;
 			queries.push_back(Query(op, a, b));
 			Q--;
 		}
+
+    // Get answer to queries and print them
 		vector<string> answers = solve(N, queries);
 		for (string ans : answers) {
 			cout << ans << "\n";
