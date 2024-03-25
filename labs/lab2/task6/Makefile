@@ -1,4 +1,4 @@
-TARGET = <...>
+TARGET = max_flow
 CXX = g++
 CXXFLAGS = -O2 -std=gnu++17
 LDFLAGS = -lrt -lpthread
