@@ -1,3 +1,14 @@
+/**
+ * Johannes Kung johku144
+ *
+ * The Disjoint Set Union (DSU), a.k.a. Union-Find, data structure.
+ *
+ * Time complexities:
+ * - find_representative(): O(alpha(n)) where alpha(n) is the inverse Ackermann 
+ *   function, according to Wikipedia
+ *   (link: https://en.wikipedia.org/wiki/Disjoint-set_data_structure)
+ * - join() and same(): O(alpha(n)) as they rely on find_representative()
+ */
 #include <iostream>
 #include <ios>
 #include <string>
@@ -40,6 +51,7 @@ struct UnionSet {
 		// Only join if the representatives are different, i.e. they are 
 		// not already the same set
 		if (a != b) {
+      // Union by rank optimisation:
 			// Choose the one with the lowest depth as the new representative 
 			// and increase its depth with the depth of the one not chosen 
 			// as representative
@@ -59,6 +71,9 @@ struct UnionSet {
 	}
 };
 
+/**
+ * A struct for neatly storing queries to the Union-Find structure.
+ */
 struct Query {
 	char operation;
 	int operand1;
@@ -75,9 +90,7 @@ vector<string> solve(int N, vector<Query> &queries) {
 	vector<string> answers;	
 	UnionSet union_set = UnionSet(N);
 
-	// O(Q) where Q is the number of queries (queries.size())
-  // TODO: This is not correct as both join() and same() 
-  // are not O(1)
+  // Perform each query and store the results
 	for (Query q : queries) {
 		if (q.operation == '=') {
 			union_set.join(q.operand1, q.operand2);
