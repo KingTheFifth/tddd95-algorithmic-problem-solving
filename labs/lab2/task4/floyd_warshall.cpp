@@ -1,3 +1,10 @@
+/**
+ * Johannes Kung johku144
+ *
+ * All pairs shortest path using the Floyd-Warhsall algorithm.
+ *
+ * Time complexity: O(|V|^3)
+ */
 #include <algorithm>
 #include <cstdint>
 #include <iostream>
@@ -11,6 +18,18 @@ using vec_i64_2d = vector<vector<i64>>;
 
 i64 INFTY = numeric_limits<int>::max();
 
+/**
+ * A straightforward implementation of the floyd-warshall algorithm for the 
+ * all pairs shortest path problem.
+ *
+ * Input: A graph respresented by a matrix of distances between pairs of nodes.
+ *        This matrix is initially an adjacency matrix.
+ *
+ * Output: The cost of the shortest path between all pairs of nodes, stored 
+ *         in the given distance matrix
+ *
+ * Time complexity: O(|V|^3)
+ */
 void floyd_warshall(vec_i64_2d &dist) {
   int nodes = dist.size();
   for (int k = 0; k < nodes; ++k) {
@@ -23,6 +42,7 @@ void floyd_warshall(vec_i64_2d &dist) {
     }
   }
 
+  // Handle negative cycles
   for (int u = 0; u < nodes; ++u) {
     for (int v = 0; v < nodes; ++v) {
       for (int t = 0; t < nodes; ++t) {
@@ -46,6 +66,8 @@ int main() {
       break;
     }
 
+    // Initialize the distance matrix
+    // Note that the distance for a node to itself is directly set to 0 here
     vec_i64_2d dist = vec_i64_2d(N);
     for (int u = 0; u < N; u++) {
       dist[u].resize(N);
