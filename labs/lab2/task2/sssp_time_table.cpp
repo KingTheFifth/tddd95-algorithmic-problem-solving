@@ -1,3 +1,12 @@
+/**
+ *
+ * Johannes Kung johku144
+ *
+ * Single sorce shortest path: time table graphs
+ * (Directed graph)
+ *
+ * Time complexity: O(|E|*log(|E|)), see dijkstra()
+ */
 #include <iostream>
 #include <ios>
 #include <deque>
@@ -10,6 +19,12 @@ using namespace std;
 
 int VERY_LARGE_DISTANCE = 999999999;
 
+/**
+ * A struct for edges to be stored in an adjacency list. Used to more neatly 
+ * represent the relevant info for an edge to a neighbour, that being 
+ * the index of the neighbour and the information needed to determine at what 
+ * time the edge can be traversed
+ */
 struct Edge {
   int node_index;
   int t_0;
@@ -24,6 +39,10 @@ struct Edge {
   }
 };
 
+/**
+ * A struct for nodes of a graph. This Node struct contains information needed 
+ * for the implementation of Dijkstra's algorithm.
+ */
 struct Node {
   int index;
   int previous;
@@ -47,7 +66,26 @@ struct Node {
   }
 };
 
+/**
+ * Implementation of Dijkstra's algorithm for single source shortest path to 
+ * all nodes in a time table graph. Uses a Node struct to record reverse paths
+ * through a previous-node pointer and the cost to reach a node from the source. 
+ * The node struct is also used to mark if a node has been visited.
+ *
+ * Input: A graph in the form of a vector of the nodes of the graph together 
+ * with an adjacency list, and the node index of the source node. Note that the 
+ * adjacency list records neighbour node index as well as the edge cost to the 
+ * neighbour
+ *
+ * Output: Shortest path from source node to every node, recorded by modifying 
+ * the nodes in the node vector. Use shortest_path() and shortest_path_cost()
+ * on the modified vector to retrieve the path and cost to a destination node.
+ *
+ * Time complexity:
+ *  - O(|E|*log(|E|))
+ */
 void dijkstra(vector<Node> &nodes, vector<vector<Edge>> &neighbours, int source) {
+  // Min-heap (priority queue) for visiting nodes
   priority_queue<Node, vector<Node>, greater<Node>> to_visit;
 
   // Set distance from source to itself to 0 and set it as the first node 
@@ -55,6 +93,12 @@ void dijkstra(vector<Node> &nodes, vector<vector<Edge>> &neighbours, int source)
   nodes[source].distance = 0; 
   to_visit.push(nodes[source]);
 
+  // O(|E|*log(|E|)) as every node is pushed at most for each edge incident to it 
+  // and insertion/extraction is O(log(|E|))
+  //
+  // For simple graphs it holds that |E|=O(|V|^2) so the overall time complexity 
+  // would be O(|E|*log(|V|)). This implementation is however for multigraphs 
+  // so the complexity is then O(|E|*log(|E|)) as there is no bound for |E|
   while (!to_visit.empty()) {
     const Node curr_node = to_visit.top();
     to_visit.pop();
@@ -80,6 +124,8 @@ void dijkstra(vector<Node> &nodes, vector<vector<Edge>> &neighbours, int source)
       // Also push such neighbour nodes to the priority queue of nodes to visit
       // Note: this may cause duplicates in the priority queue
       if (!n_node.visited) {
+        // Variables for if the neighbour can ever be reached and for how long
+        // we must wait to reach it if possible
         bool can_reach = true;
         int waiting_time;
 
@@ -120,6 +166,14 @@ void dijkstra(vector<Node> &nodes, vector<vector<Edge>> &neighbours, int source)
   }
 }
 
+/**
+ * Returns the shortest path to the destination node, given by index, from a 
+ * source node in the graph given as a list of nodes. This assumes that the 
+ * dijkstra() function has been used on the graph with the source node.
+ * Time complexity: O(|V|) 
+ *  - this is because the longest shortest path never visits any node more than 
+ *  once given positive edge costs, so the longest path can at most be |V| nodes long
+ */
 vector<int> shortest_path(vector<Node> &nodes, int destination) {
   vector<int> path;
   Node &curr_node = nodes[destination];
@@ -129,6 +183,7 @@ vector<int> shortest_path(vector<Node> &nodes, int destination) {
     return {};
   }
 
+  // Construct path backwards by following prevoius-pointer stored in the nodes
   int total_cost = curr_node.distance;
   path.push_back(destination);
   while (curr_node.previous != -1) {
@@ -138,6 +193,11 @@ vector<int> shortest_path(vector<Node> &nodes, int destination) {
   return path;
 }
 
+/**
+ * Returns the cost of the shortest path to the destination node, given by index, 
+ * from the source node in a graph for which the dijkstra() function has been called.
+ * Time complexity: O(1)
+ */
 int shortest_path_cost(vector<Node> &nodes, int destination) {
   Node &dest_node = nodes[destination];
   return nodes[destination].distance;
@@ -157,13 +217,15 @@ int main() {
     for (int n = 0; n < N; n++) {
       nodes.push_back(Node(n));
     }
-    // Represent edges as a list of neighbours for every node index
-    // A neighbour is represented as a pair containing neighbour index and cost 
+
+    // Construct and adjacency list for the graph
+    // See the Edge struct above
     vector<vector<Edge>> neighbours = vector<vector<Edge>>(N);
     for (int e = 0; e < M; e++) {
       cin >> u >> v >> t_0 >> P >> d;
       neighbours[u].push_back({v, t_0, P, d});
     }
+
     dijkstra(nodes, neighbours, S);
     for (int i = 0; i < Q; i++) {
       cin >> q;
