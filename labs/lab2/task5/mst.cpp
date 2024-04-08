@@ -1,14 +1,34 @@
+/**
+ * Johannes Kung johku144
+ *
+ * Minimal spanning tree construction using Kruskall's algorithm.
+ *
+ * Time complexity: O(|E|*log(|E|)), see mst().
+ *
+ */
 #include <algorithm>
 #include <iostream>
 #include <ios>
-#include <queue>
 #include "union_find.cpp"
+#include <tuple>
 
 using namespace std;
 
 using WeightedEdge = tuple<int, int, int>;
 using Edge = tuple<int, int>;
 
+/**
+ * An implementation of Kruskall's algorithm using the data structure for 
+ * Union-Find to keep track of which edges that create cycles.
+ *
+ * Input: A graph as an edge set and the number of vertices,
+ *        a vector of edges to store the resulting MST in.
+ *
+ * Output: A MST of the given graph stored as a list of the edges of the MST.
+ *         The edges are stored in the given result vector.
+ *
+ * Time complexity: O(|E|*log(|E|)+|E|*alpha(|V|)) = O(|E|*log(|E|))
+ */
 int mst(vector<WeightedEdge> &edge_set, int vertices, vector<Edge> &result) {
   // total cost = 0
   // While #num edges chosen < |V(G)|-1
@@ -24,12 +44,15 @@ int mst(vector<WeightedEdge> &edge_set, int vertices, vector<Edge> &result) {
   // Sort edges lexicographically
   // Since weight is the first value in the edge tuple, this will sort 
   // on edge weights in ascending order
+  // O(|E|*log(|E|))
   sort(edge_set.begin(), edge_set.end());
 
   int total_cost = 0;
   UnionSet connected_vertices = UnionSet(vertices);
 
   // Loop through the vertices in order of weight
+  // => always pick the chepeast edge that does not cause a cycle
+  // O(|E|*alpha(|V|))
   for (WeightedEdge e : edge_set) {
     int weight = get<0>(e);
     int v1 = get<1>(e);
@@ -37,7 +60,9 @@ int mst(vector<WeightedEdge> &edge_set, int vertices, vector<Edge> &result) {
 
     // Add edge e if it does not create a cycle, i.e. the end points of 
     // the edge are not in the same "equivalence" set
+    // Time complexity of Union-Find same operation: O(alpha(|V|))
     if (!connected_vertices.same(v1, v2)) {
+      // Union-Find join operation with time complexity O(alpha(|V|))
       connected_vertices.join(v1, v2);
       total_cost += weight;
       result.push_back({v1, v2});

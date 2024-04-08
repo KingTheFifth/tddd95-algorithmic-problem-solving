@@ -1,3 +1,14 @@
+/**
+ * Johannes Kung johku144
+ *
+ * The Disjoint Set Union (DSU), a.k.a. Union-Find, data structure.
+ *
+ * Time complexities:
+ * - find_representative(): O(alpha(n)) where alpha(n) is the inverse Ackermann 
+ *   function, according to Wikipedia
+ *   (link: https://en.wikipedia.org/wiki/Disjoint-set_data_structure)
+ * - join() and same(): O(alpha(n)) as they rely on find_representative()
+ */
 #include <vector>
 
 using namespace std;
@@ -10,7 +21,7 @@ struct UnionSet {
 		// O(N)
 		for (int i = 0; i < size; i++) {
 			// Initialise every element to belong to a set with itself only,
-			// having depth 0
+			// having depth 1
 			parent.push_back(i);
 			depth.push_back(1);
 		}
@@ -37,6 +48,7 @@ struct UnionSet {
 		// Only join if the representatives are different, i.e. they are 
 		// not already the same set
 		if (a != b) {
+      // Union by rank optimisation:
 			// Choose the one with the lowest depth as the new representative 
 			// and increase its depth with the depth of the one not chosen 
 			// as representative
