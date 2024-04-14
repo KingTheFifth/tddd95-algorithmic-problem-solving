@@ -1,32 +1,43 @@
+#include <cstdint>
 #include <cstdlib>
 #include <iostream>
 #include <string>
 
 using namespace std;
+using i64 = int64_t;
 
-int gcd(int a, int b) {
+i64 gcd(i64 a, i64 b) {
   return (b==0) ? abs(a) : gcd(b, a%b);
 }
 
-int lcm(int a, int b) {
-  return a*b/gcd(a,b);
+i64 lcm(i64 a, i64 b) {
+  // TODO: overflow? a / gcd(a,b) * b assuming a >= b?
+  if (a >= b) return (a/gcd(a,b))*b;
+  return a*(b/gcd(a,b));
 }
 
 class RationalNumber {
-  int numerator;
-  int denominator;
+  i64 numerator;
+  i64 denominator;
 
 public:
-  RationalNumber(int numerator, int denominator) {
-    int d = gcd(numerator, denominator);
+  RationalNumber(i64 numerator, i64 denominator) {
+    i64 d = gcd(numerator, denominator);
     this->numerator = numerator / d;
     this->denominator = denominator / d;
+
+    if (denominator < 0) {
+      this->numerator *= -1;
+      this->denominator *= -1;
+    }
   }
 
   bool operator<(const RationalNumber &other) const {
-    int l = lcm(this->denominator, other.denominator);
-    return this->numerator * l < other.numerator * l;
+    // TODO: overflow?
+    i64 l = lcm(this->denominator, other.denominator);
+    return this->numerator * other.denominator < other.numerator * this->denominator;
   }
+
   bool operator>(const RationalNumber &other) const {
     return other < *this;
   }
@@ -38,30 +49,38 @@ public:
   bool operator>=(const RationalNumber &other) const {
     return !(*this < other);
   }
+
   bool operator==(const RationalNumber &other) const {
     return this->numerator == other.numerator && this->denominator == other.denominator;
   }
 
+  bool operator!=(const RationalNumber &other) const {
+    return !(*this == other);
+  }
+
   RationalNumber operator+(const RationalNumber &other) const {
-    int l = lcm(this->denominator, other.denominator);
-    int numerator = this->numerator * l/this->denominator + other.numerator * l/other.denominator;
-    int d = gcd(numerator, l);
-    return {numerator / d, l / d};
+    i64 l = lcm(this->denominator, other.denominator);
+    i64 numerator = this->numerator * (l/this->denominator) + other.numerator * (l/other.denominator);
+    // The constructor will normalize the resulting fraction
+    return {numerator, l};
   }
 
   RationalNumber operator-(const RationalNumber &other) const {
-    int l = lcm(this->denominator, other.denominator);
-    //int numerator = this->numerator * l - other.numerator * l;
-    int numerator = this->numerator * l/this->denominator - other.numerator * l/other.denominator;
-    int d = gcd(numerator, l);
-    return {numerator / d, l / d};
+    return *this + RationalNumber(-1, 1) * other;
   }
 
   RationalNumber operator*(const RationalNumber &other) const {
-    int numerator = this->numerator*other.numerator;
-    int denominator = this->denominator*other.denominator;
-    int d = gcd(numerator, denominator);
-    return {numerator / d, denominator / d};
+    i64 n1 = this->numerator;
+    i64 n2 = other.numerator;
+    i64 d1 = this->denominator;
+    i64 d2 = other.denominator;
+
+    i64 f1 = gcd(n1, d2);
+    i64 f2 = gcd(n2, d1);
+
+    i64 numerator = (n1/f1)*(n2/f2);
+    i64 denominator = (d1/f2) * (d2/f1);
+    return {numerator, denominator};
   }
 
   RationalNumber operator/(const RationalNumber &other) const {
@@ -84,7 +103,7 @@ int main() {
   cin.tie(nullptr);
   cout.tie(nullptr);
 
-  int cases, x1, x2, y1, y2;
+  i64 cases, x1, x2, y1, y2;
   string op;
   cin >> cases;
   while (cases-- > 0) {
