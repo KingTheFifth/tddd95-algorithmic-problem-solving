@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <iostream>
 #include <ios>
+#include <tuple>
 
 using namespace std;
 using i64 = int64_t;
@@ -24,20 +25,20 @@ i64 gcd(i64 a, i64 b) {
 }
 
 /**
- * Solves a linear diophantine equation on the form a*x + b*y = c, where x and y 
- * are the variables, using the extended euclidean algorithm.
- * Assumes gcd(a,b) divides c.
+ * Calculates gcd(a,b) while also solving Bezout's identity a*x + b*y = gcd(a, b).
+ * Returns gcd(a,b), x and y.
  * Time complexity: 
  */
-pair<i64, i64> extended_euclidean(i64 a, i64 b, i64 c) {
+tuple<i64, i64, i64> extended_euclidean(i64 a, i64 b) {
   if (b == 0) {
-    return {c / a, 0};
+    return {abs(a), 1, 0};
   }
 
-  pair<i64, i64> sub_res = extended_euclidean(b, mod(a, b), c);
-  i64 x0 = sub_res.first;
-  i64 y0 = sub_res.second;
-  return {y0, x0 - y0 * (a/b)};
+  tuple<i64, i64, i64> sub_res = extended_euclidean(b, mod(a, b));
+  i64 d = get<0>(sub_res);
+  i64 x0 = get<1>(sub_res);
+  i64 y0 = get<2>(sub_res);
+  return {d, y0, x0 - y0 * (a/b)};
 }
 
 i64 add_mod(i64 a, i64 b, i64 m) {
@@ -62,7 +63,7 @@ i64 multiply_mod_rec(i64 x, i64 y, i64 m) {
   // => the product is calculated for every time y can be partitioned by 
   // division by 2
   // => O(log(b))
-  if (y <= 2) {
+  if (y <= 1) {
     return mod(x*y, m);
   }
   i64 k = y / 2;
@@ -84,13 +85,17 @@ i64 multiply_mod(i64 a, i64 b, i64 m) {
  * Time complexity:
  */
 i64 inverse_mod(i64 a, i64 m) {
-  // There is an inverse of a modulo m iff a and m are relatively prime
-  if (gcd(a, m) != 1) {
+  // There is an inverse of a modulo m iff a and m are relatively prime i.e.
+  // gcd(a, m) = 1
+  //
+  // Use the extended euclidean algorithm to calculate gcd(a,m) while also 
+  // solving the linear diophantine equation 
+  // a*a^(-1) + m*k = gcd(a, m) where a^-1 and k
+  tuple<i64, i64, i64> ext_euclid = extended_euclidean(a, m);
+  if (get<0>(ext_euclid) != 1) {
     return -1;
   }
-  // Solve the linear diophantine equation a*a^(-1) + m*k = 1 where a^(-1)
-  // and k are the variables
-  return mod(extended_euclidean(a, m, 1).first, m);
+  return mod(get<1>(ext_euclid), m);
 }
 
 /**
