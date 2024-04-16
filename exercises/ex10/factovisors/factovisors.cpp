@@ -5,7 +5,7 @@
 int legendre(int n, int p) {
   int p_i = p;
   int res = 0;
-  while (p_i <= n) {
+  while (n/p_i > 0) {
     res += n / p_i;
     p_i *= p;
   }
@@ -29,7 +29,7 @@ vector<pair<int, int>> factorize(int n, vector<int> &primes) {
 }
 
 bool solve(int n, int m, vector<int> &primes) {
-  if (n == 0) {
+  if (n == 0 || n == 1) {
     return m == 1;
   }
 
@@ -40,6 +40,9 @@ bool solve(int n, int m, vector<int> &primes) {
   if (m == 1) {
     return true;
   }
+   if (m <= n) {
+    return true;
+   }
 
   vector<pair<int, int>> m_factors = factorize(m, primes);
   for (pair<int, int> f : m_factors) {
@@ -56,7 +59,7 @@ int main() {
   ios::sync_with_stdio(false);
   cin.tie(nullptr);
   cout.tie(nullptr);
-  PrimeSieve sieve(65536);
+  PrimeSieve sieve(100000);
   vector<int> primes = sieve.get_primes();
   int n, m;
   while (cin >> n >> m) {
