@@ -2,7 +2,7 @@
 - PS2: 4p
 
 # Exercises
-sum: 13.5A, 3.5B, 0.5C
+sum: 14.5A, 3.5B, 0.5C
 
 ## Ex 1
 - help, A
@@ -53,7 +53,8 @@ sum: 1A
 sum: 1A, 1B
 
 ## Ex 11
--
+- yet satisfiability again, A
+sum: 1A
 
 ## Ex 12
 
@@ -61,7 +62,7 @@ sum: 1A, 1B
 
 
 # Labs
-Sum: 3+8+6  +4 (PSS) = 21p
+Sum: 3+8+9  +4 (PSS) = 24p
 
 ## Lab 1
 - task 1, 1p
@@ -82,11 +83,11 @@ Sum: 8p
 
 ## Lab 3
 - task 1, 1p
-- task 2 
-- task 3
+- task 2, 2p
+- task 3, 1p
 - task 4, 1p
 - task 5, 1p
 - task 6, 1p
 - task 7, 1p
 - task 8, 1p
-Sum: 6p
+Sum: 9p
