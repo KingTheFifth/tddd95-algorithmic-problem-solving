@@ -1,3 +1,9 @@
+/**
+ * Johannes Kung johku144
+ * Knapsack problem using DP by iterating over a table.
+ *
+ * Time complexity: O(N*Capacity), see knapsack()
+ */
 #include <iostream>
 #include <ios>
 #include <vector>
@@ -29,7 +35,8 @@ struct State {
  * returns the indices of the items used for the optimal knapsack.
  * Uses bottom-up DP to construct a table of size N*C, where N is the number 
  * of items + 1 in the knapsack problem and C is the capacity+1 of the knapsack
- * Time complexity O(N*C) as building the DP table is the slowest part
+ *
+ * Time complexity: O(N*C) as building the DP table is the slowest part
  */
 vector<int> knapsack(int capacity, int *values, int *weights, int n) {
   // DP table
@@ -113,6 +120,10 @@ vector<int> knapsack(int capacity, int *values, int *weights, int n) {
 }
 
 int main() {
+  cin.tie(nullptr);
+  cout.tie(nullptr);
+  ios::sync_with_stdio(false);
+
 	int c, n, w, v;
 	while(true) {
 		cin >> c >> n;
