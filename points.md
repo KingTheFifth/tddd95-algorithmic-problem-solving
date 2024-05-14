@@ -1,8 +1,9 @@
 # PSS
 - PS2: 4p
+- PS3: 4p
 
 # Exercises
-sum: 14.5A, 3.5B, 0.5C
+sum: 15.5A, 3.5B, 0.5C
 
 ## Ex 1
 - help, A
@@ -57,12 +58,14 @@ sum: 1A, 1B
 sum: 1A
 
 ## Ex 12
+- triangle trilemma, A
+sum: 1A
 
 ## Ex 13
 
 
 # Labs
-Sum: 3+8+9  +4 (PSS) = 24p
+Sum: 3+8+9  +8 (PSS) = 28p
 
 ## Lab 1
 - task 1, 1p
