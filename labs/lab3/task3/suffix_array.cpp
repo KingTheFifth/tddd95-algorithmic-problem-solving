@@ -1,3 +1,14 @@
+/**
+ * Johannes Kung johku144
+ *
+ * Longest Common Prefix (LCP) array extension of the Suffix array.
+ * Implemented using Kasai's algorithm as described by CP-Algorithms
+ * (https://cp-algorithms.com/string/suffix-array.html#longest-common-prefix-of-two-substrings-without-additional-memory)
+ *
+ * Time complexities:
+ *  - Suffix array construction: O(n*log(n)), see construct_suffix_array()
+ *  - LCP array construciton: O(n), see the above link
+ */
 #include <algorithm>
 #include <iostream>
 #include <ios>
@@ -7,10 +18,23 @@
 using namespace std;
 int ALPHABET = 256;
 
+/**
+ * Class for constructing the suffix array for a given string.
+ * Constructing an instance is O(n*log(n)) while querying is O(1). n is the 
+ * length of the string for which the suffix array was constructed.
+ * Also constructs an lcp array from the suffix array which may be accesed 
+ * using a getter-method.
+ */
 class SuffixArray {
   vector<int> p;
   vector<int> lcp;
 
+  /**
+   * Given a string s, sorts all cyclic shifts of s. The resulting sorted ordering
+   * is saved in the private vector p.
+   *
+   * Time complexity: O(n*log(n)) where n is the length of s.
+   */
   void sort_cyclic_shifts(string &s) {
     int n = s.size();
     this->p = vector<int>(n);
@@ -59,7 +83,8 @@ class SuffixArray {
       }
 
       // Secondly, sort the substrings based on the first half using counting 
-      // sort, 
+      // sort 
+      // O(n)
       fill(cnt.begin(), cnt.begin() + classes, 0);
       for (int i = 0; i < n; ++i) {
         cnt[c[p_next[i]]]++;
@@ -72,6 +97,7 @@ class SuffixArray {
       }
 
       // Construct equivalence classes
+      // O(n)
       c_next[p_next[0]] = 0;
       classes = 1;
       for (int i = 1; i < n; ++i) {
@@ -89,14 +115,28 @@ class SuffixArray {
   }
 
   void construct_suffix_array(string &s) {
+    // Add a character to the end of s that is guaranteed to come first 
+    // lexicographically.
+    //
+    // This character is used as a separator in the cyclic shifts of s.
+    // All characters to the right of the separator in a cyclic shift correspond
+    // to a suffix of s
+    //
+    // Sorting the cyclic shifts of s with the separator character is then 
+    // equivalent to sorting the suffixes of s. Note that the suffix of length 1,
+    // corresponding to the separator character, will be first in this ordering 
+    // and should be removed to get the ordering of the suffixes of s.
     s += '\0';
     this->sort_cyclic_shifts(s);
     this->p.erase(this->p.begin());
   }
 
   /**
-   * Assumes that construct_suffix_array() has been called on the given string s 
-   * before this method is called.
+   * Implementation of Kasai's algorithm for constructing an LCP array from 
+   * this suffix array. Assumes that construct_suffix_array() has been called 
+   * on the given string s before this method is called.
+   *
+   * Time complexity: O(n)
    */
   void construct_lcp_array(string &s) {
     int n = s.size();
@@ -106,18 +146,18 @@ class SuffixArray {
     }
 
     int k = 0;
-    this->lcp = vector<int>(n-1, 0);
+    this->lcp = vector<int>(n - 1, 0);
     for (int i = 0; i < n; ++i) {
-      if(rank[i] == n-1) {
-        k=0;
+      if(rank[i] == n - 1) {
+        k = 0;
         continue;
       }
       int j = this->p[rank[i] + 1];
-      while (i+k<n && j+k<n && s[i+k] == s[j+k]) {
+      while (i + k < n && j + k < n && s[i + k] == s[j + k]) {
         k++;
       }
       this->lcp[rank[i]] = k;
-      k = max(0, k-1);
+      k = max(0, k - 1);
     }
   }
 
@@ -127,10 +167,15 @@ public:
     construct_lcp_array(s);
   }
 
+  // Given an index i for the substring 0...i, returns the index of the 
+  // substring in the lexicographic order of the substrings.
   int get_suffix(int i) {
     return this->p[i];
   }
 
+  /**
+   * Returns the lcp array for this suffix array.
+   */
   vector<int> get_lcp() {
     return this->lcp;
   }
