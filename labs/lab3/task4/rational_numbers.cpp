@@ -1,3 +1,8 @@
+/**
+ * Johannes Kung johku144
+ * Rational arithmetics (+, -, *, /) on fractions a/b where a & b are integers.
+ * Implemented using a class with relevant operators overloaded.
+ */
 #include <cstdint>
 #include <cstdlib>
 #include <iostream>
@@ -6,26 +11,41 @@
 using namespace std;
 using i64 = int64_t;
 
+/**
+ * The euclidean algorithm for calculating gcd(a, b).
+ * Time complexity: O(log(min(a, b)))
+ */
 i64 gcd(i64 a, i64 b) {
   return (b==0) ? abs(a) : gcd(b, a%b);
 }
 
+/**
+ * lcm(a, b) using gcd(a, b).
+ * Time complexity: O(log(min(a, b)))
+ */
 i64 lcm(i64 a, i64 b) {
-  // TODO: overflow? a / gcd(a,b) * b assuming a >= b?
   if (a >= b) return (a/gcd(a,b))*b;
   return a*(b/gcd(a,b));
 }
 
+/**
+ * Class for representing a rational number on the form a/b where a & b are 
+ * integers. Contains methods for basic arithmetics and printing.
+ */
 class RationalNumber {
   i64 numerator;
   i64 denominator;
 
 public:
   RationalNumber(i64 numerator, i64 denominator) {
+    // Make sure to simplify the fraction as much as possible, i.e. store
+    // it in a normalized form, as this helps avoid overflows
     i64 d = gcd(numerator, denominator);
     this->numerator = numerator / d;
     this->denominator = denominator / d;
 
+    // Keep the negative sign in the numerator instead of the denominator 
+    // for convenience
     if (denominator < 0) {
       this->numerator *= -1;
       this->denominator *= -1;
@@ -33,7 +53,6 @@ public:
   }
 
   bool operator<(const RationalNumber &other) const {
-    // TODO: overflow?
     i64 l = lcm(this->denominator, other.denominator);
     return this->numerator * other.denominator < other.numerator * this->denominator;
   }
