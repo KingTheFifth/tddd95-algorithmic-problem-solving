@@ -1,12 +1,18 @@
+/**
+ * Johannes Kung johku144
+ * Interval cover. This is essentially the basic interval scheduling problem,
+ * a greedy problem, but where the intervals should be overlapping (but as little as possible) 
+ * and as large as possible.
+ * Link from the course page: https://medium.com/cracking-the-data-science-interview/greedy-algorithm-and-dynamic-programming-a8c019928405
+ *
+ * Time complexity: O(N*log(N)), see cover()
+ */
 #include <algorithm>
 #include <cmath>
 #include <cstdio>
 #include <iostream>
 #include <ios>
 #include <limits>
-#include <unordered_map>
-#include <unordered_set>
-#include <utility>
 #include <vector>
 
 using namespace std;
@@ -41,12 +47,13 @@ struct Interval {
 };
 
 /**
- * Given a list of intervals and a target interval to cover using the intervals
+ * Given a list of N intervals and a target interval to cover using the intervals
  * in the list, returns true if the target can be wholly covered and a list of 
  * the indices of the intervals used to minimally cover the target.
  * Return false if it is not possible to cover the target interval with 
- * the given intervals. Time complexity O(N*log N) where N is the number of 
- * supplied intervals to be used for covering.
+ * the given intervals. 
+ *
+ * Time complexity: O(N*log N) 
  * (Slowest part of algorithm is sorting which is O(N*log N) )
  */
 bool cover(Interval &target, vector<Interval> &intervals, vector<int> &used) {
